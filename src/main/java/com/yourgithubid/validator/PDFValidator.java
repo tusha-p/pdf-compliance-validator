@@ -1,4 +1,4 @@
-package com.tushap.validator;
+package com.yourgithubid.validator;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
