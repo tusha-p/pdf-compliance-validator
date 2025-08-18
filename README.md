@@ -1,7 +1,11 @@
-# PDF Compliance Validator  
-![Java CI](https://github.com/tusha-p/pdf-compliance-validator/workflows/Java%20CI/badge.svg)
+ # PDF Compliance Validator  
 
-**Flags potential 21 CFR Part 11 issues in audit trails and signatures**  
+## Key Checks  
+- ✅ Audit trail completeness (§11.10)  
+- ✅ Timestamp validation (ISO 8601)  
+- ✅ Signature binding (§11.200)  
 
-```bash
-java -jar validator.jar your_document.pdf
+## Contribute  
+1. Fork this repo  
+2. Submit PRs to `src/`  
+3. See [Contributing Guidelines](CONTRIBUTING.md) *(Optional)*  
