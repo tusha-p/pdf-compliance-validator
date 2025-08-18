@@ -1,2 +1,7 @@
-# pdf-compliance-validator
- *Free, open-source tool to flag potential 21 CFR Part 11 issues in PDFs*  For: QA teams, CSV engineers, and auditors Checks:  Audit trail completeness (§11.10), Timestamp formatting (ISO 8601), Signature manifestations (§11.200). Not FDA-certified—always consult your Quality team.  Tech: Java • PDFBox • Git
+# PDF Compliance Validator  
+![Java CI](https://github.com/tusha-p/pdf-compliance-validator/workflows/Java%20CI/badge.svg)
+
+**Flags potential 21 CFR Part 11 issues in audit trails and signatures**  
+
+```bash
+java -jar validator.jar your_document.pdf
