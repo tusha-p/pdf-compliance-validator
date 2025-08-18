@@ -1,4 +1,4 @@
-package com.tushap.validator;
+package com.yourgithubid.validator;
 
 public class CLI {
     public static void main(String[] args) {
