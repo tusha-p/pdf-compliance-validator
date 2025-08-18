@@ -2,7 +2,7 @@ package com.yourgithubid.validator;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+import org.apache.pdfbox.Loader;
 import java.io.File;
 import java.io.IOException;
 
@@ -11,19 +11,15 @@ public class PDFValidator {
     public static final String FREE_VERSION = "1.0-free";
     
     public static void validate(String filePath) throws IOException {
-        try (PDDocument doc = PDDocument.load(new File(filePath))) {
+        // Use Loader instead of PDDocument directly
+        try (PDDocument doc = Loader.loadPDF(new File(filePath))) {
             System.out.println("\n📄 PDF Compliance Report (Free v" + FREE_VERSION + ")");
             System.out.println("File: " + filePath);
             
             // ===== FREE TIER CHECKS =====
-            // 1. Basic Metadata
             PDDocumentInformation info = doc.getDocumentInformation();
             checkFieldExists(info.getAuthor(), "Author");
-            
-            // 2. Audit Trail Basics
             checkFieldExists(info.getModificationDate(), "Modification Timestamp");
-            
-            // 3. Security (Placeholder)
             checkSignatures(doc);
             
             // ===== PRO TIER PLACEHOLDERS =====
@@ -33,7 +29,6 @@ public class PDFValidator {
         }
     }
     
-    // Free tier helper methods
     private static void checkFieldExists(Object field, String fieldName) {
         System.out.println(fieldName + ": " + 
             (field != null ? "✅" : "❌ Missing (" + getRelevantCFR(fieldName) + ")"));
@@ -44,9 +39,8 @@ public class PDFValidator {
         System.out.println("Digitally Signed: " + (isSigned ? "✅" : "⚠️ Not signed"));
         
         if (!isSigned) {
-            AccessPermission ap = doc.getCurrentAccessPermission();
             System.out.println("Permissions: " + 
-                (ap.canModify() ? "⚠️ Editing allowed" : "✅ Read-only"));
+                (doc.getAccessPermission().canModify() ? "⚠️ Editing allowed" : "✅ Read-only"));
         }
     }
     
