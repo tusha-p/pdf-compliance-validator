@@ -1,4 +1,4 @@
-package com.tusha_p.validator;
+package com.yourgithubid.validator;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class PDFValidator {
-    
     public static void validate(File file) throws IOException {
         System.out.println("Validating: " + file.getName());
         
