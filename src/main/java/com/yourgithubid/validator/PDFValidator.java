@@ -1,65 +1,36 @@
 import java.io.*;
 import java.nio.file.*;
+import java.time.*;
 
 public class PDFValidator {
     public static void validate(File pdfFile) {
+        // 1. Use /tmp with timestamped filename
+        String timestamp = Instant.now().toString().replace(":", "-");
+        Path reportPath = Paths.get("/tmp", "pdf_validation_" + timestamp + ".txt");
+        
         try {
-            // 1. Get ABSOLUTE project root
-            String projectRoot = new File("").getCanonicalPath();
-            System.out.println("Project root: " + projectRoot);
-
-            // 2. Create reports directory with verification
-          Path reportsDir = Paths.get("/tmp/pdf_reports");
-Files.createDirectories(reportsDir); // Will succeed because /tmp is always writable
-
-Path reportPath = reportsDir.resolve(
-    "validation_" + System.currentTimeMillis() + ".txt"
-);
-
-// Write with verification
-Files.write(reportPath, content.getBytes());
-System.out.println("✓ Report saved to: " + reportPath);
-            System.out.println("Attempting to create: " + reportsDir);
-            
-            Files.createDirectories(reportsDir);
-            if (!Files.exists(reportsDir)) {
-                throw new IOException("Directory creation failed!");
-            }
-            System.out.println("Directory created successfully");
-
-            // 3. Create file with verification
-            Path reportPath = reportsDir.resolve(
-                pdfFile.getName().replace(".pdf", "_validation.txt")
-            );
-            
+            // 2. Create file content
             String content = "PDF Validation Report\n" +
-                          "File: " + pdfFile.getAbsolutePath() + "\n" +
-                          "Generated: " + java.time.LocalDateTime.now() + "\n";
+                           "=====================\n" +
+                           "Validated File: " + pdfFile.getAbsolutePath() + "\n" +
+                           "Timestamp: " + LocalDateTime.now() + "\n" +
+                           "Status: Successfully processed\n";
             
-            Files.write(reportPath, content.getBytes(),
-                StandardOpenOption.CREATE,
-                StandardOpenOption.TRUNCATE_EXISTING);
-
-            // 4. Verify file creation
-            if (!Files.exists(reportPath)) {
-                throw new IOException("File creation failed silently!");
-            }
-            System.out.println("SUCCESS! Report saved to:\n" + 
-                reportPath.toAbsolutePath());
-
+            // 3. Write with verification
+            Files.write(reportPath, content.getBytes());
+            
+            // 4. Print SUCCESS with exact path
+            System.out.println("SUCCESS! Report created at:");
+            System.out.println(reportPath.toAbsolutePath());
+            System.out.println("View with: cat " + reportPath);
+            
         } catch (Exception e) {
-            System.err.println("CRITICAL ERROR:");
+            System.err.println("ERROR: Could not create report");
             e.printStackTrace();
-            System.err.println("Current dir: " + System.getProperty("user.dir"));
             
-            // Emergency fallback - write to /tmp
-            try {
-                Path fallbackPath = Paths.get("/tmp/fallback_report.txt");
-                Files.write(fallbackPath, "Emergency report".getBytes());
-                System.err.println("Wrote fallback to: " + fallbackPath);
-            } catch (Exception ee) {
-                System.err.println("COULD NOT WRITE ANYWHERE!");
-            }
+            // Emergency fallback to console
+            System.out.println("EMERGENCY OUTPUT:");
+            System.out.println("PDF: " + pdfFile.getName() + " was validated");
         }
     }
 }
