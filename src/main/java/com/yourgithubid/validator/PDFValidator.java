@@ -9,7 +9,16 @@ public class PDFValidator {
             System.out.println("Project root: " + projectRoot);
 
             // 2. Create reports directory with verification
-            Path reportsDir = Paths.get(projectRoot, "reports");
+          Path reportsDir = Paths.get("/tmp/pdf_reports");
+Files.createDirectories(reportsDir); // Will succeed because /tmp is always writable
+
+Path reportPath = reportsDir.resolve(
+    "validation_" + System.currentTimeMillis() + ".txt"
+);
+
+// Write with verification
+Files.write(reportPath, content.getBytes());
+System.out.println("✓ Report saved to: " + reportPath);
             System.out.println("Attempting to create: " + reportsDir);
             
             Files.createDirectories(reportsDir);
