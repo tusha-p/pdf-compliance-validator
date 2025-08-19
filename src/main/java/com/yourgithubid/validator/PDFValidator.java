@@ -10,9 +10,9 @@ public class PDFValidator {
         System.out.println("\n🔍 Validating: " + file.getName());
         try (PDDocument doc = PDDocument.load(file)) {
             PDDocumentInformation info = doc.getDocumentInformation();
-            System.out.println("✅ Author: " + info.getAuthor());
-            System.out.println("✅ Modified: " + info.getModificationDate());
-            System.out.println("✅ Signed: " + !doc.getSignatureDictionaries().isEmpty());
+            System.out.println("Author: " + (info.getAuthor() != null ? "✅" : "❌ Missing"));
+            System.out.println("Modified: " + (info.getModificationDate() != null ? "✅" : "❌ Missing"));
+            System.out.println("Signed: " + (!doc.getSignatureDictionaries().isEmpty() ? "✅" : "❌ Not signed"));
         }
     }
 }
