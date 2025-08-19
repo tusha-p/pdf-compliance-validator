@@ -5,14 +5,18 @@ import java.io.File;
 public class CLI {
     public static void main(String[] args) {
         if (args.length == 0) {
-            System.out.println("Usage: java -jar validator.jar <PDF_FILE>");
+            System.out.println("Usage: java -jar validator.jar <PDF_FILE_PATH>");
             return;
         }
         try {
-            // Convert String path to File object
-            PDFValidator.validate(new File(args[0]));
+            File pdfFile = new File(args[0]);
+            if (!pdfFile.exists()) {
+                System.out.println("❌ File not found: " + args[0]);
+                return;
+            }
+            PDFValidator.validate(pdfFile);
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println("❌ Validation failed:");
             e.printStackTrace();
         }
     }
