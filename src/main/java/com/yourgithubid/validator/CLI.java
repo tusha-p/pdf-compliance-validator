@@ -11,6 +11,7 @@ public class CLI {
         
         String filePath = args[0];  // This is the String input
         File pdfFile = new File(filePath);  // Proper conversion to File
+          System.out.println (pdfFile + "File");
         
         try {
             if (!pdfFile.exists()) {
