@@ -15,7 +15,9 @@ public class PDFValidator {
             String reportContent = generateReport(doc); 
             
             // Write to file
-            Files.write(reportPath, reportContent.getBytes());
+          Files.write(reportPath, reportContent.getBytes());
+System.out.println("Report saved to: " + reportPath.toAbsolutePath());
+System.out.println("File exists? " + Files.exists(reportPath));
             
             System.out.println("✓ Report generated: " + reportPath.toAbsolutePath());
         }
