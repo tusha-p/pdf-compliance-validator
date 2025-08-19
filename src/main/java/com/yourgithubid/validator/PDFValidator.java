@@ -2,26 +2,34 @@ import java.nio.file.*;
 import java.time.*;
 
 public class PDFValidator {
-    public static void validate(File pdfFile) throws IOException {
-        // Create report filename based on input PDF
-        String reportName = pdfFile.getName().replace(".pdf", "") + 
-                          "_validation_" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + 
-                          ".txt";
-        
-       Path reportPath = Paths.get(System.getProperty("user.dir"), 
-                          pdfFile.getName().replace(".pdf", "") + "_report.txt");
-        try (PDDocument doc = PDDocument.load(pdfFile)) {
-            // Generate validation results
-            String reportContent = generateReport(doc); 
-            
-            // Write to file
-          Files.write(reportPath, reportContent.getBytes());
-System.out.println("Report saved to: " + reportPath.toAbsolutePath());
-System.out.println("File exists? " + Files.exists(reportPath));
-            
-            System.out.println("✓ Report generated: " + reportPath.toAbsolutePath());
-        }
-    }
+       public static void validate(File pdfFile) throws IOException {
+    // Use absolute path in project root
+    Path reportPath = Paths.get(
+        System.getProperty("user.dir"),
+        pdfFile.getName().replace(".pdf", "_validation.txt")
+    );
+    
+    // Debug output
+    System.out.println("Attempting to create: " + reportPath);
+    
+    // Create sample content
+    String content = "PDF Validation Report\n" +
+                    "File: " + pdfFile.getName() + "\n" +
+                    "Status: Test Complete\n";
+    
+    // Write with explicit permissions
+    Files.write(
+        reportPath,
+        content.getBytes(),
+        StandardOpenOption.CREATE,
+        StandardOpenOption.TRUNCATE_EXISTING,
+        StandardOpenOption.WRITE
+    );
+    
+    // Verify
+    System.out.println("File created successfully: " + Files.exists(reportPath));
+    System.out.println("Full path: " + reportPath.toAbsolutePath());
+}
 
     private static String generateReport(PDDocument doc) {
         PDDocumentInformation info = doc.getDocumentInformation();
