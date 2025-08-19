@@ -7,7 +7,7 @@ public class CLI {
             return;
         }
         try {
-            PDFValidator.validate(args[0]);
+            PDFValidator.validate(new java.io.File(args[0]));
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
