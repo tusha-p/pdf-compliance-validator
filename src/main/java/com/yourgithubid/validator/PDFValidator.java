@@ -1,53 +1,42 @@
-package com.yourgithubid.validator;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-import java.io.File;
-import java.io.IOException;
+import java.nio.file.*;
+import java.time.*;
 
 public class PDFValidator {
-    
     public static void validate(File pdfFile) throws IOException {
-        // Pre-validation checks
-        if (pdfFile == null) {
-            throw new IllegalArgumentException("PDF file cannot be null");
-        }
+        // Create report filename based on input PDF
+        String reportName = pdfFile.getName().replace(".pdf", "") + 
+                          "_validation_" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + 
+                          ".txt";
         
-        if (!pdfFile.exists()) {
-            throw new IOException("File does not exist: " + pdfFile.getAbsolutePath());
-        }
-
-        if (!pdfFile.getName().toLowerCase().endsWith(".pdf")) {
-            throw new IOException("Not a PDF file: " + pdfFile.getName());
-        }
-
-        System.out.println("\n🔍 Validating: " + pdfFile.getName());
+        Path reportPath = Paths.get(reportName); // Saves to project root
         
         try (PDDocument doc = PDDocument.load(pdfFile)) {
-            PDDocumentInformation info = doc.getDocumentInformation();
+            // Generate validation results
+            String reportContent = generateReport(doc); 
             
-            // Validate required metadata
-            validateMetadata(info);
+            // Write to file
+            Files.write(reportPath, reportContent.getBytes());
             
-            // Validate signatures
-            validateSignatures(doc);
+            System.out.println("✓ Report generated: " + reportPath.toAbsolutePath());
         }
     }
 
-    private static void validateMetadata(PDDocumentInformation info) {
-        System.out.println("\n📄 Metadata Validation:");
-        System.out.println("Author: " + (info.getAuthor() != null ? "✅" : "❌ Missing"));
-        System.out.println("Title: " + (info.getTitle() != null ? "✅" : "❌ Missing"));
-        System.out.println("Modified: " + (info.getModificationDate() != null ? "✅" : "❌ Missing"));
-    }
-
-    private static void validateSignatures(PDDocument doc) throws IOException {
-        System.out.println("\n🖋️ Signature Validation:");
-        boolean isSigned = !doc.getSignatureDictionaries().isEmpty();
-        System.out.println("Document signed: " + (isSigned ? "✅" : "❌ Not signed"));
-        
-        if (isSigned) {
-            System.out.println("Signature count: " + doc.getSignatureDictionaries().size());
-        }
+    private static String generateReport(PDDocument doc) {
+        PDDocumentInformation info = doc.getDocumentInformation();
+        return String.format(
+            "PDF Validation Report\n" +
+            "====================\n" +
+            "File: %s\n\n" +
+            "Metadata:\n" +
+            "- Author: %s\n" +
+            "- Title: %s\n" +
+            "- Creation: %s\n\n" +
+            "Signatures: %s",
+            doc.getDocument().getDocument().getFile(),
+            info.getAuthor() != null ? "✅ " + info.getAuthor() : "❌ Missing",
+            info.getTitle() != null ? "✅ " + info.getTitle() : "❌ Missing",
+            info.getCreationDate() != null ? info.getCreationDate() : "❌ Missing",
+            doc.getSignatureDictionaries().isEmpty() ? "❌ None" : "✅ Valid"
+        );
     }
 }
