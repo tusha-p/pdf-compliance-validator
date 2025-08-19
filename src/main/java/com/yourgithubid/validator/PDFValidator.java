@@ -4,40 +4,42 @@ import java.nio.file.*;
 public class PDFValidator {
     public static void validate(File pdfFile) {
         try {
-            // 1. Use canonical path for absolute certainty
-            Path reportPath = Paths.get(
-                new File("").getCanonicalPath(), // Project root
-                "reports",
+            // 1. Get ABSOLUTE path to project root
+            String projectRoot = new File("").getAbsolutePath();
+            
+            // 2. Create reports directory if missing
+            Path reportsDir = Paths.get(projectRoot, "reports");
+            if (!Files.exists(reportsDir)) {
+                Files.createDirectories(reportsDir);
+                System.out.println("Created directory: " + reportsDir);
+            }
+
+            // 3. Create output file path
+            Path reportPath = reportsDir.resolve(
                 pdfFile.getName().replace(".pdf", "_validation.txt")
             );
+
+            // 4. WRITE WITH VERIFICATION
+            String content = "PDF Validation Report\n" +
+                           "File: " + pdfFile.getName() + "\n" +
+                           "Generated: " + java.time.LocalDateTime.now() + "\n";
             
-            // 2. Ensure reports directory exists
-            Files.createDirectories(reportPath.getParent());
-            
-            // 3. Atomic file write with verification
-            Path tempFile = Files.write(
-                reportPath, 
-                generateReportContent().getBytes(),
+            Files.write(reportPath, content.getBytes(),
                 StandardOpenOption.CREATE,
-                StandardOpenOption.TRUNCATE_EXISTING
-            );
+                StandardOpenOption.TRUNCATE_EXISTING);
             
-            // 4. Verify
-            if (!Files.exists(tempFile)) {
-                throw new IOException("File creation failed!");
+            // 5. CONFIRM FILE EXISTS
+            if (Files.exists(reportPath)) {
+                System.out.println("SUCCESS! Report saved to:");
+                System.out.println(reportPath.toAbsolutePath());
+            } else {
+                throw new IOException("File creation failed silently!");
             }
-            
-            System.out.println("✓ Report saved to: " + reportPath.normalize());
-            
+
         } catch (Exception e) {
-            System.err.println("⚠️ Failed to create report:");
+            System.err.println("CRITICAL ERROR:");
             e.printStackTrace();
+            System.err.println("Current dir: " + System.getProperty("user.dir"));
         }
-    }
-    
-    private static String generateReportContent() {
-        return "PDF Validation Report\n" +
-               "Generated at: " + java.time.LocalDateTime.now() + "\n" +
-               "Status: Successfully created test report\n";
     }
 }
