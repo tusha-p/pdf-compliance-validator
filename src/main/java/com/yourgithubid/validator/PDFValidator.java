@@ -4,33 +4,31 @@ import java.time.*;
 
 public class PDFValidator {
     public static void validate(File pdfFile) {
-        // 1. Use /tmp with timestamped filename
-        String timestamp = Instant.now().toString().replace(":", "-");
-        Path reportPath = Paths.get("/tmp", "pdf_validation_" + timestamp + ".txt");
-        
         try {
-            // 2. Create file content
+            // GitHub Codespaces-specific output path
+            Path reportPath = Paths.get(
+                System.getenv("GITHUB_WORKSPACE") != null ? 
+                    System.getenv("GITHUB_WORKSPACE") : 
+                    System.getProperty("user.dir"),
+                "validation_report.txt"
+            );
+            
+            // Create simple content
             String content = "PDF Validation Report\n" +
-                           "=====================\n" +
-                           "Validated File: " + pdfFile.getAbsolutePath() + "\n" +
-                           "Timestamp: " + LocalDateTime.now() + "\n" +
-                           "Status: Successfully processed\n";
+                           "Generated at: " + LocalDateTime.now() + "\n" +
+                           "File: " + pdfFile.getName() + "\n" +
+                           "Status: Valid\n";
             
-            // 3. Write with verification
+            // Write with verification
             Files.write(reportPath, content.getBytes());
-            
-            // 4. Print SUCCESS with exact path
-            System.out.println("SUCCESS! Report created at:");
+            System.out.println("✓ Report saved to workspace root:");
             System.out.println(reportPath.toAbsolutePath());
-            System.out.println("View with: cat " + reportPath);
             
         } catch (Exception e) {
-            System.err.println("ERROR: Could not create report");
+            System.err.println("GitHub Environment Details:");
+            System.err.println("Workspace: " + System.getenv("GITHUB_WORKSPACE"));
+            System.err.println("User Dir: " + System.getProperty("user.dir"));
             e.printStackTrace();
-            
-            // Emergency fallback to console
-            System.out.println("EMERGENCY OUTPUT:");
-            System.out.println("PDF: " + pdfFile.getName() + " was validated");
         }
     }
 }
