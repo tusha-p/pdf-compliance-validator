@@ -7,12 +7,12 @@ import java.io.IOException;
 
 public class PDFValidator {
     public static void validate(File file) throws IOException {
-        System.out.println("\n🔍 Validating: " + file.getName());
+        System.out.println("\n Validating: " + file.getName());
         try (PDDocument doc = PDDocument.load(file)) {
             PDDocumentInformation info = doc.getDocumentInformation();
-            System.out.println("Author: " + (info.getAuthor() != null ? "✅" : "❌ Missing"));
-            System.out.println("Modified: " + (info.getModificationDate() != null ? "✅" : "❌ Missing"));
-            System.out.println("Signed: " + (!doc.getSignatureDictionaries().isEmpty() ? "✅" : "❌ Not signed"));
+            System.out.println("Author: " + (info.getAuthor() != null ? "Y" : "Missing"));
+            System.out.println("Modified: " + (info.getModificationDate() != null ? "Y" : "Missing"));
+            System.out.println("Signed: " + (!doc.getSignatureDictionaries().isEmpty() ? "Y" : "Not signed"));
         }
     }
 }
