@@ -4,6 +4,7 @@ import java.io.File;
 
 public class CLI {
     public static void main(String[] args) {
+         System.out.println("Current working directory: " + System.getProperty("user.dir"));
         if (args.length == 0) {
             System.out.println("Usage: java -jar validator.jar <PDF_FILE_PATH>");
             return;
