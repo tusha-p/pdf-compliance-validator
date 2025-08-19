@@ -8,8 +8,8 @@ public class PDFValidator {
                           "_validation_" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + 
                           ".txt";
         
-        Path reportPath = Paths.get(reportName); // Saves to project root
-        
+       Path reportPath = Paths.get(System.getProperty("user.dir"), 
+                          pdfFile.getName().replace(".pdf", "") + "_report.txt");
         try (PDDocument doc = PDDocument.load(pdfFile)) {
             // Generate validation results
             String reportContent = generateReport(doc); 
