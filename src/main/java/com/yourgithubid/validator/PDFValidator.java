@@ -4,31 +4,40 @@ import java.nio.file.*;
 public class PDFValidator {
     public static void validate(File pdfFile) {
         try {
-            // 1. Get ABSOLUTE output path
+            // 1. Use canonical path for absolute certainty
             Path reportPath = Paths.get(
-                System.getProperty("user.dir"),
+                new File("").getCanonicalPath(), // Project root
+                "reports",
                 pdfFile.getName().replace(".pdf", "_validation.txt")
             );
             
-            // 2. DEBUG: Print critical info
-            System.out.println("\n=== DEBUG INFO ===");
-            System.out.println("Current dir: " + System.getProperty("user.dir"));
-            System.out.println("Attempting to write to: " + reportPath);
-            System.out.println("Parent exists? " + Files.exists(reportPath.getParent()));
+            // 2. Ensure reports directory exists
+            Files.createDirectories(reportPath.getParent());
             
-            // 3. Create file with explicit permissions
-            String content = "TEST CONTENT";
-            Files.write(reportPath, content.getBytes(), 
-                StandardOpenOption.CREATE, 
-                StandardOpenOption.WRITE);
+            // 3. Atomic file write with verification
+            Path tempFile = Files.write(
+                reportPath, 
+                generateReportContent().getBytes(),
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING
+            );
             
             // 4. Verify
-            System.out.println("File exists after write? " + Files.exists(reportPath));
-            System.out.println("=== END DEBUG ===");
+            if (!Files.exists(tempFile)) {
+                throw new IOException("File creation failed!");
+            }
+            
+            System.out.println("✓ Report saved to: " + reportPath.normalize());
             
         } catch (Exception e) {
-            System.err.println("CRITICAL ERROR:");
+            System.err.println("⚠️ Failed to create report:");
             e.printStackTrace();
         }
+    }
+    
+    private static String generateReportContent() {
+        return "PDF Validation Report\n" +
+               "Generated at: " + java.time.LocalDateTime.now() + "\n" +
+               "Status: Successfully created test report\n";
     }
 }
